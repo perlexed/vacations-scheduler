@@ -1,0 +1,29 @@
+stages:
+  - build
+  - deploy
+
+variables:
+  DEV_DEPLOY_DIR: '/srv/vacations-scheduler/$CI_COMMIT_REF_NAME'
+  EXCLUDE_DIRS: '.git .idea'
+
+build:
+  stage: build
+  artifacts:
+    paths:
+      - vendor/
+  cache:
+    paths:
+      - vendor/
+  only:
+    - master
+  script:
+    - composer --no-interaction --no-progress --prefer-dist install
+
+deploy_dev:
+  stage: deploy
+  only:
+    - master
+  script:
+    - ssh root@dev "mkdir -p $DEV_DEPLOY_DIR"
+    - printf "%s\n" $EXCLUDE_DIRS > ../.rsync-exclude && rsync -rzak --exclude-from=../.rsync-exclude $CI_PROJECT_DIR/ root@dev:$DEV_DEPLOY_DIR
+    - ssh root@dev "cd $DEV_DEPLOY_DIR && ln -sf ../config/.env && ln -sf ../config/vacations-scheduler-credentials.json && service php7.4-fpm restart"
