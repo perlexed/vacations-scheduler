@@ -17,7 +17,7 @@
     "require": {
         "php": ">=8.1",
         "ext-json": "*",
-        "google/apiclient": "v2.13.2",
+        "google/apiclient": "v2.15.1",
         "guiguiboy/php-cli-progress-bar": "^0.0.4",
         "ext-mbstring": "*",
         "sentry/sdk": "*",
